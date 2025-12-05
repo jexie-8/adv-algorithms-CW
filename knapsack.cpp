@@ -46,6 +46,7 @@ vector<item> greedy(vector<item> items, int budget) {
 
 // 2. DP Approach (value = 1 for all items)
 vector<item> dp(vector<item> items, int budget) {
+    
 
     // 1. create a DP table (vector of vectors / 2D matrix) where:
     // outer vector : the number of rows : items.size() + 1
@@ -72,6 +73,7 @@ vector<item> dp(vector<item> items, int budget) {
     // 3. backtracking (from last to first item to see which items contributed (like a staircase)) to find which items were chosen 
     vector<item> chosenItems;
     for (int i = items.size(); i > 0; i--) {
+        if (budget <= 0) break;                  // stop looping once the budget is used up
         if (dp[i][budget] != dp[i-1][budget]) {  // if this cell & the one before it are equal, the item wasnt included 
             chosenItems.push_back(items[i-1]);   // != -> was included -> add this item to the chosen items vector 
             budget -= items[i-1].price;          // deduct from budget the price of the item & re-iterate 
@@ -86,9 +88,11 @@ int main() {
     int budget;
     cout << "Enter the shopping budget: ";
     cin >> budget;
+    if (budget < 0) { cout << "Invalid budget"; return 0; }
 
     vector<item> items;
     cout << "Enter items. Type 'done' when finished." << endl;
+
 
     while (true) {
         // 2. user input item name
@@ -102,9 +106,11 @@ int main() {
         int price;
         cout << "Item price: ";
         cin >> price;
+        if (price < 0) { cout << "Invalid price"; continue; }
 
         items.push_back({name, price});
     }
+    if (items.empty()) { cout << "No items entered."; return 0; }
 
     // 4. Call both functions for the same list of items & user budget
     vector<item> greedyItems = greedy(items, budget);
@@ -118,6 +124,8 @@ int main() {
         sumOfGreedy += greedyItems[i].price;
     }
     cout << "Total items: " << greedyItems.size() << "\n";
+    cout << "Total cost: " << sumOfGreedy << "\n";
+
     
 
     cout << "Results based on dynamic programming approach: " << endl;
@@ -133,23 +141,3 @@ int main() {
     return 0;
 }
 
-/* Enter the shopping budget: 10
-Enter items. Type 'done' when finished.
-Item name: gloves
-Item price: 1
-Item name: piano
-Item price: 5
-Item name: car
-Item price: 5
-Item name: ball
-Item price: 10
-Item name: done
-Results based on greedy approach:
-- gloves (1)
-- piano (5)
-Total items: 2
-Results based on dynamic programming approach:
-- piano (5)
-- gloves (1)
-Total items: 2
-Total cost: 6*/
